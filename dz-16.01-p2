@@ -54,34 +54,33 @@ int** removeColumn(int** Arr, int rows, int& cols, int position) {
     return newArr;
 }
 
-int** cyclicShift(int** Arr, int rows, int cols, int shifts, bool shiftRows, bool shiftRight) {
-    if (Arr == nullptr || rows == 0 || cols == 0) return Arr;
+int** cyclicShift(int** arr, int rows, int cols, int shifts, bool shiftRows, bool shiftRight) {
+    if (arr == nullptr || rows == 0 || cols == 0) return arr;
 
     shifts = shifts % (shiftRows ? rows : cols);
 
-     if (shiftRows) {
-        int** tempArr = new int*[rows];
+    if (shiftRows) {
+        auto tempArr = new int*[rows];
          for (int i = 0; i < rows; i++){
-               tempArr[(i + (shiftRight ? rows - shifts : shifts)) % rows] = Arr[i];
-         }
+             tempArr[(i + (shiftRight ? rows - shifts : shifts)) % rows] = arr[i];
+        }
            for(int i = 0; i < rows; ++i){
-             delete[] Arr[i];
+             delete[] arr[i];
           }
-         delete[] Arr;
+         delete[] arr;
         return tempArr;
 
-
-     }
+    }
      else {
         for (int i = 0; i < rows; ++i) {
-            int* tempRow = new int[cols];
+           auto tempRow = new int[cols];
             for(int j = 0; j < cols; j++) {
-               tempRow[(j + (shiftRight ? cols - shifts : shifts)) % cols] = Arr[i][j];
+               tempRow[(j + (shiftRight ? cols - shifts : shifts)) % cols] = arr[i][j];
             }
-            delete[] Arr[i];
-              Arr[i] = tempRow;
+            delete[] arr[i];
+             arr[i] = tempRow;
         }
-       return Arr;
+       return arr;
     }
 }
 
@@ -110,11 +109,11 @@ int main() {
     cout << "После удаления столбца с позицией 2:" << endl;
     pArr(Arr, rows, cols);
 
-    Arr = cyclicShift(Arr, rows, cols, 1, true, false);
+    Arr = cyclicShift(Arr, rows, cols, 1, false, true);
     cout << "После сдвига строк влево на 1:" << endl;
     pArr(Arr, rows, cols);
 
-    Arr = cyclicShift(Arr, rows, cols, 2, false, true);
+    Arr = cyclicShift(Arr, rows, cols, 2, true, false);
     cout << "После сдвига столбцов вправо на 2:" << endl;
     pArr(Arr, rows, cols);
 
