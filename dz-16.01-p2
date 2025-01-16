@@ -1,0 +1,127 @@
+#include <iostream>
+
+using namespace std;
+
+void pArr(int** Arr, int rows, int cols) {
+    if(Arr == nullptr || rows == 0 || cols == 0) return;
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            cout << Arr[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+int** addColumn(int** Arr, int rows, int& cols, int position, int columnValue) {
+    if (Arr == nullptr || rows == 0 || position < 0 || position > cols) return Arr;
+
+    int** newArr = new int*[rows];
+    for (int i = 0; i < rows; ++i) {
+          newArr[i] = new int[cols + 1];
+        for (int j = 0; j < cols + 1; ++j) {
+            if (j < position) newArr[i][j] = Arr[i][j];
+            else if (j == position) newArr[i][j] = columnValue;
+            else newArr[i][j] = Arr[i][j - 1];
+        }
+    }
+
+    for (int i = 0; i < rows; ++i) {
+      delete[] Arr[i];
+    }
+    delete[] Arr;
+    cols++;
+    return newArr;
+}
+
+int** removeColumn(int** Arr, int rows, int& cols, int position) {
+     if (Arr == nullptr || rows == 0 || position < 0 || position >= cols) return Arr;
+
+    int** newArr = new int*[rows];
+    for (int i = 0; i < rows; ++i) {
+          newArr[i] = new int[cols - 1];
+        for (int j = 0; j < cols - 1; ++j) {
+            if (j < position) newArr[i][j] = Arr[i][j];
+            else newArr[i][j] = Arr[i][j + 1];
+        }
+    }
+
+    for (int i = 0; i < rows; ++i) {
+      delete[] Arr[i];
+    }
+    delete[] Arr;
+    cols--;
+    return newArr;
+}
+
+int** cyclicShift(int** Arr, int rows, int cols, int shifts, bool shiftRows, bool shiftRight) {
+    if (Arr == nullptr || rows == 0 || cols == 0) return Arr;
+
+    shifts = shifts % (shiftRows ? rows : cols);
+
+     if (shiftRows) {
+        int** tempArr = new int*[rows];
+         for (int i = 0; i < rows; i++){
+               tempArr[(i + (shiftRight ? rows - shifts : shifts)) % rows] = Arr[i];
+         }
+           for(int i = 0; i < rows; ++i){
+             delete[] Arr[i];
+          }
+         delete[] Arr;
+        return tempArr;
+
+
+     }
+     else {
+        for (int i = 0; i < rows; ++i) {
+            int* tempRow = new int[cols];
+            for(int j = 0; j < cols; j++) {
+               tempRow[(j + (shiftRight ? cols - shifts : shifts)) % cols] = Arr[i][j];
+            }
+            delete[] Arr[i];
+              Arr[i] = tempRow;
+        }
+       return Arr;
+    }
+}
+
+
+
+
+int main() {
+    int rows = 3;
+    int cols = 3;
+    int** Arr = new int*[rows];
+    for (int i = 0; i < rows; ++i) {
+        Arr[i] = new int[cols];
+    }
+      Arr[0][0] = 1; Arr[0][1] = 2; Arr[0][2] = 3;
+      Arr[1][0] = 4; Arr[1][1] = 5; Arr[1][2] = 6;
+      Arr[2][0] = 7; Arr[2][1] = 8; Arr[2][2] = 9;
+
+    cout << "Исходная матрица:" << endl;
+    pArr(Arr, rows, cols);
+
+    Arr = addColumn(Arr, rows, cols, 1, 100);
+    cout << "После добавления столбца в позицию 1:" << endl;
+    pArr(Arr, rows, cols);
+
+    Arr = removeColumn(Arr, rows, cols, 2);
+    cout << "После удаления столбца с позицией 2:" << endl;
+    pArr(Arr, rows, cols);
+
+    Arr = cyclicShift(Arr, rows, cols, 1, true, false);
+    cout << "После сдвига строк влево на 1:" << endl;
+    pArr(Arr, rows, cols);
+
+    Arr = cyclicShift(Arr, rows, cols, 2, false, true);
+    cout << "После сдвига столбцов вправо на 2:" << endl;
+    pArr(Arr, rows, cols);
+
+    for (int i = 0; i < rows; ++i) {
+        delete[] Arr[i];
+    }
+    delete[] Arr;
+
+    return 0;
+}
